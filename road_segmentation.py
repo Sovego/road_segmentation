@@ -75,7 +75,7 @@ def create_image_plot(row_len: int = None, figsize=(16, 6), **images):
 
 def save_imgs(path=None, name="imgs", **images):
     if (path is None):
-        raise AttributeError(f"You shoud write path")
+        raise AttributeError("You shoud write path")
     if not os.path.exists(path):
         os.makedirs(path)
     image_path = pjoin(path, f"{name}")
@@ -171,19 +171,16 @@ def one_hot_encode(label, label_values):
         equality = np.equal(label, colour)
         class_map = np.all(equality, axis=-1)
         semantic_map.append(class_map)
-    semantic_map = np.stack(semantic_map, axis=-1)
-    return semantic_map
+    return np.stack(semantic_map, axis=-1)
 
 
 def reverse_one_hot(image):
-    x = np.argmax(image, axis=-1)
-    return x
+    return np.argmax(image, axis=-1)
 
 
 def colour_code_segmentation(image, label_values):
     colour_codes = np.array(label_values)
-    x = colour_codes[image.astype(int)]
-    return x
+    return colour_codes[image.astype(int)]
 
 
 # In[7]:
@@ -227,8 +224,16 @@ sample_dataset = RoadsDataset(*TEST_SET,
 
 for i in range(10):
     image, mask = sample_dataset[np.random.randint(0, len(sample_dataset))]
-    TBwriter.add_figure(f'train samples', create_image_plot(origin=image, true=colour_code_segmentation(
-        reverse_one_hot(mask), CLASS_RGB_VALUES)), global_step=i)
+    TBwriter.add_figure(
+        'train samples',
+        create_image_plot(
+            origin=image,
+            true=colour_code_segmentation(
+                reverse_one_hot(mask), CLASS_RGB_VALUES
+            ),
+        ),
+        global_step=i,
+    )
 del (sample_dataset)
 
 # In[9]:
@@ -344,8 +349,7 @@ class UNet(nn.Module):
         x = self.up2(x, x3)
         x = self.up3(x, x2)
         x = self.up4(x, x1)
-        logits = self.outc(x)
-        return logits
+        return self.outc(x)
 
 
 # In[11]:
@@ -557,7 +561,7 @@ if __name__ == '__main__':
         print(f"Используется не обученная модель, происходит загрузка модели из {SAVED_MODEL_PATH}")
         model = None
         if "ONNX" in SAVE_METHOD and model is None:
-            print(f"Попытка импорта модели из onnx файла")
+            print("Попытка импорта модели из onnx файла")
             try:
                 import onnx
 
@@ -565,7 +569,7 @@ if __name__ == '__main__':
             except:
                 pass
         if "TORCH" in SAVE_METHOD and model is None:
-            print(f"Попытка импорта модели из pth файла")
+            print("Попытка импорта модели из pth файла")
             model = UNet(3, 2, bilinear=True)
             model.state_dict(torch.load(f=SAVED_MODEL_PATH))
 
